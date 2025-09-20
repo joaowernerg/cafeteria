@@ -1,19 +1,14 @@
-// Menu Hamburger para Mobile
+// Menu Hamburger
 const hamburger = document.getElementById('hamburger');
 const navbar = document.getElementById('navbar');
 
 hamburger.addEventListener('click', () => {
-  if (navbar.style.display === 'flex') {
-    navbar.style.display = 'none';
-  } else {
-    navbar.style.display = 'flex';
-  }
+  navbar.classList.toggle('active');
+  hamburger.classList.toggle('open');
 });
 
-// Scroll Suave para links internos
-const links = document.querySelectorAll('.navbar a');
-
-links.forEach(link => {
+// Scroll suave
+document.querySelectorAll('.navbar a').forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
     const target = document.querySelector(link.getAttribute('href'));
@@ -21,30 +16,22 @@ links.forEach(link => {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     if (window.innerWidth <= 768) {
-      navbar.style.display = 'none';
+      navbar.classList.remove('active');
+      hamburger.classList.remove('open');
     }
   });
 });
 
-// Aparecer cards ao rolar a página
-const cards = document.querySelectorAll('.card, .especial-card, .review');
+// Cards com Intersection Observer
+const cards = document.querySelectorAll('.card');
 
-const appearOnScroll = () => {
-  const windowBottom = window.innerHeight + window.scrollY;
-  cards.forEach(card => {
-    const cardTop = card.offsetTop + card.offsetHeight / 4;
-    if (windowBottom > cardTop) {
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('show');
+      observer.unobserve(entry.target);
     }
   });
-};
+}, { threshold: 0.2 });
 
-cards.forEach(card => {
-  card.style.opacity = '0';
-  card.style.transform = 'translateY(30px)';
-  card.style.transition = 'all 0.6s ease-out';
-});
-
-window.addEventListener('scroll', appearOnScroll);
-window.addEventListener('load', appearOnScroll);
+cards.forEach(card => observer.observe(card));
